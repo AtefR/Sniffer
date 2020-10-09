@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HexView.Wpf" Version="0.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\..\..\..\Downloads\TibiaAPI-master\Apps\Record\bin\Debug\netcoreapp3.1\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf">
+      <HintPath>..\..\..\..\Downloads\TibiaAPI-master\Apps\Record\bin\Debug\netcoreapp3.1\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\Downloads\TibiaAPI-master\Apps\Record\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="TibiaAPI">
+      <HintPath>..\..\..\..\Downloads\TibiaAPI-master\TibiaAPI\bin\Debug\netstandard2.0\TibiaAPI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

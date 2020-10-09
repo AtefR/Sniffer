@@ -1,0 +1,47 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Sniffer"
+        xmlns:ViewModels="clr-namespace:Sniffer.ViewModels" 
+        xmlns:hv="clr-namespace:HexView.Wpf;assembly=HexView.Wpf" 
+        x:Class="Sniffer.Views.MainWindow"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="600">
+    <Window.DataContext>
+        <ViewModels:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="3" />
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation = "Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Label Content="Filter:" Margin="1" />
+            <ComboBox Width="70" Margin="5" SelectedIndex="{Binding SelectedPacketTypeIndex}">
+                <ComboBoxItem Content="Both"/>
+                <ComboBoxItem Content="Client"/>
+                <ComboBoxItem Content="Server"/>
+            </ComboBox>
+            <TextBox Width="100" Text="{Binding FilterOpCode}" Margin="5" TextAlignment="Center" />
+            <Button Width="70" Margin="5"  Content="Search" Command="{Binding FilterCommand}"/>
+        </StackPanel>
+        <ListView Grid.Row="1"  Name="PacketsList" ItemsSource="{Binding FilteredPackets}" SelectedItem="{Binding SelectedPacket}" SelectionMode="Single">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Type" Width="80" DisplayMemberBinding="{Binding Type}" />
+                    <GridViewColumn Header="OpCode" Width="80" DisplayMemberBinding="{Binding OpCode}" />
+                    <GridViewColumn Header="Data" Width="400" DisplayMemberBinding="{Binding}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <GridSplitter ResizeDirection="Rows" HorizontalAlignment="Stretch" Grid.Row="2"/>
+        <hv:HexViewer Grid.Row="3" x:Name="hexViewer"
+            DataSource="{Binding ElementName=PacketsList, 
+            Path=SelectedItem.Binary, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            Columns="{Binding RelativeSource={RelativeSource Self}, Path=MaxVisibleColumns}"/>
+    </Grid>
+</Window>
