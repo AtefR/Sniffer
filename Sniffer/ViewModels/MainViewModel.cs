@@ -95,29 +95,29 @@ namespace Sniffer.ViewModels
             Packets = new ObservableCollection<Packet>();
             FilteredPackets = new ObservableCollection<Packet>();
 
-            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04 });
-            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
-            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
-            AddToPackets(PacketType.Server, new byte[] { 0x01, 0x02, 0x03, 0x04 });
-            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
-            AddToPackets(PacketType.Server, new byte[] { 0x01, 0x02, 0x03, 0x04 });
-            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
-            AddToPackets(PacketType.Server, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            //AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04 });
+            //AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            //AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            //AddToPackets(PacketType.Server, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            //AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            //AddToPackets(PacketType.Server, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            //AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            //AddToPackets(PacketType.Server, new byte[] { 0x01, 0x02, 0x03, 0x04 });
 
-            //if (!DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            //{
-            //    _client = new Client(string.Empty);
+            if (!DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                _client = new Client(string.Empty);
 
-            //    _client.Logger.Level = Logger.LogLevel.Error;
-            //    _client.Logger.Output = Logger.LogOutput.Console;
+                _client.Logger.Level = Logger.LogLevel.Error;
+                _client.Logger.Output = Logger.LogOutput.Console;
 
-            //    _client.Connection.OnReceivedClientMessage += Proxy_OnReceivedClientMessage;
-            //    _client.Connection.OnReceivedServerMessage += Proxy_OnReceivedServerMessage;
+                _client.Connection.OnReceivedClientMessage += Proxy_OnReceivedClientMessage;
+                _client.Connection.OnReceivedServerMessage += Proxy_OnReceivedServerMessage;
 
-            //    _client.Connection.IsClientPacketParsingEnabled = false;
-            //    _client.Connection.IsServerPacketParsingEnabled = false;
-            //    _client.StartConnection(httpPort: 7171, loginWebService: string.Empty);
-            //}
+                _client.Connection.IsClientPacketParsingEnabled = false;
+                _client.Connection.IsServerPacketParsingEnabled = false;
+                _client.StartConnection(httpPort: 7171, loginWebService: string.Empty);
+            }
         }
 
         private void Proxy_OnReceivedClientMessage(byte[] data)
