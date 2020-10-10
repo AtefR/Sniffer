@@ -78,18 +78,6 @@ namespace Sniffer.ViewModels
             }
         }
 
-        private bool _autoScroll;
-        public bool AutoScroll
-        {
-            get { return _autoScroll; }
-            set
-            {
-                _autoScroll = value;
-                OnPropertyChanged();
-            }
-        }
-
-
         public MainViewModel()
         {
             Packets = new ObservableCollection<Packet>();

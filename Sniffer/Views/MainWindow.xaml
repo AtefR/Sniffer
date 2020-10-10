@@ -29,9 +29,9 @@
             </ComboBox>
             <TextBox Width="100" Text="{Binding FilterOpCode}" Margin="5" TextAlignment="Center" />
             <Button Width="70" Margin="5"  Content="Search" Command="{Binding FilterCommand}"/>
-            <CheckBox Content="AutoScroll" Margin="7" IsChecked="{Binding AutoScroll}" />
+            <CheckBox Content="AutoScroll" Margin="7" Name="autoScroll" />
         </StackPanel>
-        <models:ScrollingListView Grid.Row="1" AutoScroll="True" x:Name="PacketsList" ItemsSource="{Binding FilteredPackets}" SelectedItem="{Binding SelectedPacket}" SelectionMode="Single">
+        <models:ScrollingListView Grid.Row="1" AutoScroll="{Binding ElementName=autoScroll, Path=IsChecked}" x:Name="PacketsList" ItemsSource="{Binding FilteredPackets}" SelectedItem="{Binding SelectedPacket}" SelectionMode="Single">
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="_Remove" Command="{Binding RemoveCommand}"/>

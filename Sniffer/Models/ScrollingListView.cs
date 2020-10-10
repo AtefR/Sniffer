@@ -16,7 +16,8 @@ namespace Sniffer.Models
 
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
-            if (!AutoScroll || e.NewItems == null) return;
+            if (!AutoScroll) return;
+            if (e.NewItems == null) return;
             var newItemCount = e.NewItems.Count;
 
             if (newItemCount > 0)
