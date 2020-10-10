@@ -2,12 +2,12 @@
 using OXGaming.TibiaAPI.Constants;
 using OXGaming.TibiaAPI.Utilities;
 using Sniffer.Models;
+using Sniffer.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 
@@ -15,16 +15,11 @@ namespace Sniffer.ViewModels
 {
     public class MainViewModel : PropertyChangedBase
     {
-        [DllImport("Kernel32")]
-        public static extern void AllocConsole();
-
-        [DllImport("Kernel32")]
-        public static extern void FreeConsole();
-
+        private MainWindow _window;
         #region TibiaApi
         private Client _client;
-
         #endregion
+
         private ObservableCollection<Packet> _packets;
         public ObservableCollection<Packet> Packets
         {
@@ -75,42 +70,54 @@ namespace Sniffer.ViewModels
             get { return _filterOpCode.ToString(); }
             set
             {
-                int opCode;
-                if(int.TryParse(value, out opCode))
+                if (int.TryParse(value, out int opCode))
                 {
                     _filterOpCode = opCode;
+                    OnPropertyChanged();
                 }
             }
         }
 
+        private bool _autoScroll;
+        public bool AutoScroll
+        {
+            get { return _autoScroll; }
+            set
+            {
+                _autoScroll = value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public MainViewModel()
         {
-            if (!DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            {
-                try
-                {
+            Packets = new ObservableCollection<Packet>();
+            FilteredPackets = new ObservableCollection<Packet>();
 
-                    AllocConsole();
+            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x03, 0x04 });
+            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            AddToPackets(PacketType.Server, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            AddToPackets(PacketType.Server, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            AddToPackets(PacketType.Client, new byte[] { 0x01, 0x02, 0x03, 0x04 });
+            AddToPackets(PacketType.Server, new byte[] { 0x01, 0x02, 0x03, 0x04 });
 
-                    using (_client = new Client(string.Empty))
-                    {
-                        _client.Logger.Level = Logger.LogLevel.Error;
-                        _client.Logger.Output = Logger.LogOutput.Console;
+            //if (!DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            //{
+            //    _client = new Client(string.Empty);
 
-                        _client.Connection.OnReceivedClientMessage += Proxy_OnReceivedClientMessage;
-                        _client.Connection.OnReceivedServerMessage += Proxy_OnReceivedServerMessage;
+            //    _client.Logger.Level = Logger.LogLevel.Error;
+            //    _client.Logger.Output = Logger.LogOutput.Console;
 
-                        _client.Connection.IsClientPacketParsingEnabled = false;
-                        _client.Connection.IsServerPacketParsingEnabled = false;
-                        _client.StartConnection(httpPort: 7171, loginWebService: string.Empty);
+            //    _client.Connection.OnReceivedClientMessage += Proxy_OnReceivedClientMessage;
+            //    _client.Connection.OnReceivedServerMessage += Proxy_OnReceivedServerMessage;
 
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
+            //    _client.Connection.IsClientPacketParsingEnabled = false;
+            //    _client.Connection.IsServerPacketParsingEnabled = false;
+            //    _client.StartConnection(httpPort: 7171, loginWebService: string.Empty);
+            //}
         }
 
         private void Proxy_OnReceivedClientMessage(byte[] data)
@@ -126,18 +133,27 @@ namespace Sniffer.ViewModels
         public void AddToPackets(PacketType type, byte[] data)
         {
             var packet = new Packet(type, data);
-            Packets.Add(packet);
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                Packets.Add(packet);
+            });
 
             var filterType = (PacketType)(SelectedPacketTypeIndex - 1);
-            if (filterType == type)
+            if (filterType == type || SelectedPacketTypeIndex == 0)
                 if (_filterOpCode > 0)
                 {
                     if (_filterOpCode == packet.OpCode)
-                        FilteredPackets.Add(packet);
+                        Application.Current.Dispatcher.Invoke(delegate
+                        {
+                            FilteredPackets.Add(packet);
+                        });
                 }
                 else
                 {
-                    FilteredPackets.Add(packet);
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        FilteredPackets.Add(packet);
+                    });
                 }
         }
 
@@ -149,8 +165,6 @@ namespace Sniffer.ViewModels
 
             //Filter Type
             IEnumerable<Packet> filteredList = null;
-            if (FilteredPackets == null)
-                FilteredPackets = new ObservableCollection<Packet>();
             FilteredPackets.Clear();
             if (SelectedPacketTypeIndex == 1)
             {
@@ -172,6 +186,21 @@ namespace Sniffer.ViewModels
             }
 
             FilteredPackets = new ObservableCollection<Packet>(filteredList);
+        }
+
+        public ICommand ClearCommand => new Command(_ => Clear());
+        private void Clear()
+        {
+            Packets.Clear();
+            FilteredPackets.Clear();
+        }
+        public ICommand RemoveCommand => new Command(_ => Remove());
+        private void Remove()
+        {
+            if(Packets.Contains(SelectedPacket))
+                Packets.Remove(SelectedPacket);
+            if (FilteredPackets.Contains(SelectedPacket))
+                FilteredPackets.Remove(SelectedPacket);
         }
     }
 }

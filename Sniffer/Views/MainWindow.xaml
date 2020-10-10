@@ -6,9 +6,10 @@
         xmlns:local="clr-namespace:Sniffer"
         xmlns:ViewModels="clr-namespace:Sniffer.ViewModels" 
         xmlns:hv="clr-namespace:HexView.Wpf;assembly=HexView.Wpf" 
+        xmlns:models="clr-namespace:Sniffer.Models" 
         x:Class="Sniffer.Views.MainWindow"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="600">
+        Title="Sniffer" Height="700" Width="600">
     <Window.DataContext>
         <ViewModels:MainViewModel/>
     </Window.DataContext>
@@ -17,19 +18,26 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="3" />
-            <RowDefinition Height="200"/>
+            <RowDefinition Height="200" MinHeight="170" />
         </Grid.RowDefinitions>
-        <StackPanel Orientation = "Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <Label Content="Filter:" Margin="1" />
-            <ComboBox Width="70" Margin="5" SelectedIndex="{Binding SelectedPacketTypeIndex}">
+            <ComboBox Width="70" Margin="4" SelectedIndex="{Binding SelectedPacketTypeIndex}">
                 <ComboBoxItem Content="Both"/>
                 <ComboBoxItem Content="Client"/>
                 <ComboBoxItem Content="Server"/>
             </ComboBox>
             <TextBox Width="100" Text="{Binding FilterOpCode}" Margin="5" TextAlignment="Center" />
             <Button Width="70" Margin="5"  Content="Search" Command="{Binding FilterCommand}"/>
+            <CheckBox Content="AutoScroll" Margin="7" IsChecked="{Binding AutoScroll}" />
         </StackPanel>
-        <ListView Grid.Row="1"  Name="PacketsList" ItemsSource="{Binding FilteredPackets}" SelectedItem="{Binding SelectedPacket}" SelectionMode="Single">
+        <models:ScrollingListView Grid.Row="1" AutoScroll="True" x:Name="PacketsList" ItemsSource="{Binding FilteredPackets}" SelectedItem="{Binding SelectedPacket}" SelectionMode="Single">
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="_Remove" Command="{Binding RemoveCommand}"/>
+                    <MenuItem Header="_Clear" Command="{Binding ClearCommand}"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Type" Width="80" DisplayMemberBinding="{Binding Type}" />
@@ -37,11 +45,50 @@
                     <GridViewColumn Header="Data" Width="400" DisplayMemberBinding="{Binding}" />
                 </GridView>
             </ListView.View>
-        </ListView>
+        </models:ScrollingListView>
         <GridSplitter ResizeDirection="Rows" HorizontalAlignment="Stretch" Grid.Row="2"/>
-        <hv:HexViewer Grid.Row="3" x:Name="hexViewer"
-            DataSource="{Binding ElementName=PacketsList, 
-            Path=SelectedItem.Binary, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            Columns="{Binding RelativeSource={RelativeSource Self}, Path=MaxVisibleColumns}"/>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border BorderThickness="0 0 1 0" BorderBrush="Black" Margin="0 5 0 14">
+                <Grid MaxHeight="170" VerticalAlignment="Top" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1.5*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Short: " />
+                    <Label Foreground="#FF0066CC" Grid.Column="2" Content="{Binding ElementName=hexViewer, Path=SelectionStart, StringFormat={}{0:X8}}"/>
+
+                    <Label Content="Int: " Grid.Row="1"/>
+                    <Label Content="0" Foreground="#FF0066CC" Grid.Row="1" Grid.Column="2"/>
+
+                    <Label Content="Long: " Grid.Row="2"/>
+                    <Label Content="" Foreground="#FF0066CC" Grid.Row="2" Grid.Column="2"/>
+
+                    <Label Content="UShort: " Grid.Row="3"/>
+                    <Label Content="0" Foreground="#FF0066CC" Grid.Row="3" Grid.Column="2"/>
+
+                    <Label Content="UInt: " Grid.Row="4"/>
+                    <Label Content="0" Foreground="#FF0066CC" Grid.Row="4" Grid.Column="2"/>
+
+                    <Label Content="ULong: " Grid.Row="5"/>
+                    <Label Content="0" Foreground="#FF0066CC" Grid.Row="5" Grid.Column="2"/>
+                </Grid>
+            </Border>
+            <hv:HexViewer Grid.Column="1" x:Name="hexViewer"
+                DataSource="{Binding ElementName=PacketsList, 
+                Path=SelectedItem.Binary, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Columns="{Binding RelativeSource={RelativeSource Self}, Path=MaxVisibleColumns}" ShowAddress="False"/>
+        </Grid>
     </Grid>
 </Window>
