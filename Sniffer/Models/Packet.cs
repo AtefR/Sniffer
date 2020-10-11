@@ -9,7 +9,7 @@ namespace Sniffer.Models
         public PacketType Type { get; set; }
         public byte[] Data { get; set; }
         public BinaryReader Binary { get; set; }
-        public short OpCode => Data[0];
+        public short OpCode => Data[8];
         public Packet(PacketType type, byte[] data)
         {
             Type = type;
